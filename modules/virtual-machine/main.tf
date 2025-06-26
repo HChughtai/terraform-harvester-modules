@@ -70,13 +70,12 @@ resource "harvester_virtualmachine" "vm" {
   dynamic "disk" {
     for_each = var.external_volumes
     content {
-      name                      = disk.value.device_name
-      type                      = "disk"
-      boot_order                = disk.value.boot_order
-      bus                       = disk.value.bus
-      existing_volume_name      = disk.value.volume_name
-      existing_volume_namespace = disk.value.volume_namespace != "" ? disk.value.volume_namespace : var.namespace
-      auto_delete               = false # Never auto-delete external volumes
+      name                 = disk.value.device_name
+      type                 = "disk"
+      boot_order           = disk.value.boot_order
+      bus                  = disk.value.bus
+      existing_volume_name = disk.value.volume_name
+      auto_delete          = false # Never auto-delete external volumes
     }
   }
 
