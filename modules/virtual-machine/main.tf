@@ -9,6 +9,7 @@ resource "harvester_cloudinit_secret" "user_data_secret" {
   user_data = var.user_data != "" ? var.user_data : templatefile("${path.module}/templates/user_data.yaml.tftpl", {
     ssh_public_key   = var.ssh_public_key
     additional_disks = var.additional_disks
+    external_volumes = var.external_volumes
   })
 }
 
