@@ -40,6 +40,7 @@ No modules.
 | <a name="input_disk_size"></a> [disk\_size](#input\_disk\_size) | n/a | `string` | `"30Gi"` | no |
 | <a name="input_disk_type"></a> [disk\_type](#input\_disk\_type) | n/a | `string` | `"disk"` | no |
 | <a name="input_efi_boot"></a> [efi\_boot](#input\_efi\_boot) | n/a | `bool` | `false` | no |
+| <a name="input_external_volumes"></a> [external\_volumes](#input\_external\_volumes) | List of external volumes to attach to this VM | <pre>list(object({<br/>    volume_name      = string<br/>    volume_namespace = optional(string, "") # If empty, uses VM namespace<br/>    device_name      = string<br/>    boot_order       = number<br/>    bus              = optional(string, "virtio")<br/>    mount_path       = optional(string, "")<br/>    filesystem       = optional(string, "ext4")<br/>  }))</pre> | `[]` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | n/a | `string` | `"16Gi"` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the vm | `string` | n/a | yes |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Name of the namespace into which the VMs with be delployed. It must exist | `string` | n/a | yes |

@@ -17,6 +17,20 @@ variable "additional_disks" {
   default = []
 }
 
+variable "external_volumes" {
+  type = list(object({
+    volume_name      = string
+    volume_namespace = optional(string, "") # If empty, uses VM namespace
+    device_name      = string
+    boot_order       = number
+    bus              = optional(string, "virtio")
+    mount_path       = optional(string, "")
+    filesystem       = optional(string, "ext4")
+  }))
+  default     = []
+  description = "List of external volumes to attach to this VM"
+}
+
 variable "cloudinit_type" {
   type    = string
   default = "noCloud"

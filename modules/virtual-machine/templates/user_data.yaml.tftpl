@@ -1,17 +1,30 @@
-#cloud-config
-%{ if length(additional_disks) != 0 ~}
+%{ if length(additional_disks) != 0 || length(external_volumes) != 0 ~}
 fs_setup:
 %{ for disk in additional_disks }
   - cmd: mkfs -t %(filesystem)s -L %(label)s %(device)s
     label: ${disk.name}
     filesystem: xfs
     overwrite: false
-    device: /dev/sda
+    device: /dev/vd${substr("bcdefghijklmnop", index(additional_disks, disk) + 1, 1)}
+%{ endfor ~}
+%{ for volume in external_volumes }
+%{ if volume.mount_path != "" }
+  - cmd: mkfs -t %(filesystem)s -L %(label)s %(device)s
+    label: ${volume.device_name}
+    filesystem: ${volume.filesystem}
+    overwrite: false
+    device: /dev/vd${substr("bcdefghijklmnop", length(additional_disks) + index(external_volumes, volume) + 1, 1)}
+%{ endif }
 %{ endfor ~}
 
 mounts:
 %{ for disk in additional_disks }
-  - [/dev/sda, ${disk.mount}, xfs, "defaults,nofail", "0", "2"]
+  - [/dev/vd${substr("bcdefghijklmnop", index(additional_disks, disk) + 1, 1)}, ${disk.mount}, xfs, "defaults,nofail", "0", "2"]
+%{ endfor ~}
+%{ for volume in external_volumes }
+%{ if volume.mount_path != "" }
+  - [/dev/vd${substr("bcdefghijklmnop", length(additional_disks) + index(external_volumes, volume) + 1, 1)}, ${volume.mount_path}, ${volume.filesystem}, "defaults,nofail", "0", "2"]
+%{ endif }
 %{ endfor ~}
 %{ endif ~}
 
@@ -25,6 +38,12 @@ runcmd:
     - enable
     - --now
     - qemu-guest-agent.service
+%{ for volume in external_volumes }
+%{ if volume.mount_path != "" }
+  # Create mount point for ${volume.device_name}
+  - mkdir -p ${volume.mount_path}
+%{ endif }
+%{ endfor ~}
 
 %{ if ssh_public_key != "" }
 ssh_authorized_keys:
